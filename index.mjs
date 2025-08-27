@@ -12,6 +12,8 @@ db.connection.once('open', () => console.log("connected to db")).on("error", (er
 // })
 app.use(cors())
 app.use(express.json())
-
+app.get("/", (req, res) => {
+  res.send("🚀 API is running on Vercel");
+});
 app.use("/",router)
 export default app;
