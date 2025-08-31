@@ -7,13 +7,13 @@ import cors from "cors";
 
 const app = express();
 db.connection.once('open', () => console.log("connected to db")).on("error", (err) => console.log("error connecting db -->", err))
-// app.listen(5000,()=>{
-//     console.log("Server is running on port 5000 index");
-// })
+
+
 app.use(cors())
 app.use(express.json())
 app.get("/", (req, res) => {
   res.send("🚀 API is running on Vercel");
+  
 });
 app.use("/",router)
 export default app;
