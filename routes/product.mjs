@@ -24,25 +24,27 @@ catch(e){
 }
 })
 
-router.post('/post',upload.single('image'),async(req,res)=>{
-    try{
-        const imageUrl = req.file?.path; // Get the image URL from the uploaded file
-        const productData = {
-            ...req.body,
-            image: imageUrl // Add the image URL to the product data
-        };
+router.post('/post', upload.single('image'), async (req, res) => {
+  try {
+    console.log("Incoming body:", req.body);
+    console.log("Incoming file:", req.file);
 
-        const postProduct=new Products(productData);
-        await 
-        postProduct.save() 
-        res.send({ message: 'data posted successfully' })
-        console.log("data:", req.body);
-        
-    }
-    catch(e){
-        res.status(500).send({message:e.message})
-    }
-})
+    const imageUrl = req.file ? req.file.path : null;
+
+    const productData = {
+      ...req.body,
+      image: imageUrl
+    };
+
+    const postProduct = new Products(productData);
+    await postProduct.save();
+
+    res.status(201).send({ message: 'Product posted successfully', product: postProduct });
+  } catch (e) {
+    console.error("Error saving product:", e);
+    res.status(500).send({ message: e.message });
+  }
+});
 
             //To post product without image upload middleware
             
