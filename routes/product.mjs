@@ -47,26 +47,33 @@ router.get('/:id', async (req, res) => {
 });
 
 
-router.post('/post', upload.single('image'), async (req, res) => {
-
+router.post("/post", upload.single("image"), async (req, res) => {
   try {
+    // log incoming data for debugging
     console.log("Incoming body:", req.body);
     console.log("Incoming file:", req.file);
 
-    const imageUrl = req.file ? req.file.path : null;
+    const imageUrl = req.file?.path || ""; // safe fallback if no file
 
-    const productData = {
-      ...req.body,
-      image: imageUrl
-    };
+    // Validate required fields
+    const { title, description, price, category } = req.body;
+    if (!title || !description || !price || !category) {
+      return res.status(400).send({ message: "All fields except image are required" });
+    }
 
-    const postProduct = new Products(productData);
-    await postProduct.save();
+    const newProduct = new Products({
+      title,
+      description,
+      price,
+      category,
+      image: imageUrl,
+    });
 
-    res.status(201).send({ message: 'Product posted successfully', product: postProduct });
+    await newProduct.save();
+    res.status(201).send({ message: "Product posted successfully", Data: newProduct });
   } catch (e) {
     console.error("Error saving product:", e);
-    res.status(500).send({ message: e.message });
+    res.status(500).send({ message: "Server error", error: e.message });
   }
 });
 
