@@ -24,29 +24,6 @@ res.send({message: "All products fetched successfully", Data: allProducts});
 // }
 // })
 
-
-import mongoose from "mongoose";
-
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({ message: "Invalid product ID format" });
-    }
-
-    const singleProduct = await Products.findById(id);
-    if (!singleProduct) {
-      return res.status(404).send({ message: "Product not found" });
-    }
-
-    res.status(200).send({ message:"Single product fetched successfully", Data: singleProduct });
-  } catch (e) {
-    res.status(500).send({ message:"Server error", error:e.message });
-  }
-});
-
-
 router.post("/post", upload.single("image"), async (req, res) => {
   try {
     // log incoming data for debugging
@@ -76,6 +53,38 @@ router.post("/post", upload.single("image"), async (req, res) => {
     res.status(500).send({ message: "Server error", error: e.message });
   }
 });
+
+
+
+router.get("/id/:id", async (req, res) => {
+  try {
+    const ad = await Products.findById(req.params.id);
+    res.send({ message: "Data Fetched Successfully", singleProduct: ad });
+  } catch (e) {
+    res.status(500).send({ message: e.message });
+  }
+});
+
+// router.get('/:id', async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return res.status(400).send({ message: "Invalid product ID format" });
+//     }
+
+//     const singleProduct = await Products.findById(id);
+//     if (!singleProduct) {
+//       return res.status(404).send({ message: "Product not found" });
+//     }
+
+//     res.status(200).send({ message:"Single product fetched successfully", Data: singleProduct });
+//   } catch (e) {
+//     res.status(500).send({ message:"Server error", error:e.message });
+//   }
+// });
+
+
 
             //To post product without image upload middleware
             
