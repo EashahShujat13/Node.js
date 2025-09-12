@@ -1,7 +1,7 @@
 import express from "express";
 import Products from "../models/products.mjs";
 import upload from "../middlewares/uploadimg.mjs";
-
+import verifyToken from "../middlewares/verifyToken.mjs";
 
 
 const router = express.Router();
@@ -24,13 +24,14 @@ res.send({message: "All products fetched successfully", Data: allProducts});
 // }
 // })
 
-router.post("/post", upload.single("image"), async (req, res) => {
+router.post("/post",verifyToken, upload.single("image"), async (req, res) => {
   try {
     // log incoming data for debugging
     console.log("Incoming body:", req.body);
     console.log("Incoming file:", req.file);
 
-    const imageUrl = req.file?.path || ""; // safe fallback if no file
+   const imageUrl = req.file?.path || req.file?.secure_url || "";
+// safe fallback if no file
 
     // Validate required fields
     const { title, description, price, category } = req.body;
