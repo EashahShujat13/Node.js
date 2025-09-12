@@ -17,7 +17,7 @@ router.post('/register',async(req,res)=>{
     res.send({ message: "User registered successfully!" })
     }
     catch(e){
-        res.send({message:e.message})
+        res.send({message:"rigesster error",error:e.message})
     }
 })
 
@@ -45,7 +45,7 @@ router.post('/login',async(req,res)=>{
     res.send({ message: 'User logged in successfully!',token })
 }
     catch(e){
-        res.status(404).send({message:e.messsage})
+        res.status(404).send({message:"token error",error:e.message})
     }
 })
 

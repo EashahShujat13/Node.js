@@ -30,7 +30,9 @@ router.post("/post",verifyToken, upload.single("image"), async (req, res) => {
     console.log("Incoming body:", req.body);
     console.log("Incoming file:", req.file);
 
-   const imageUrl = req.file?.path || req.file?.secure_url || "";
+   const imageUrl = req.file?.path || "";
+   
+  // message:"rigesster error",error:e.message
 // safe fallback if no file
 
     // Validate required fields
