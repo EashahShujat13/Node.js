@@ -1,6 +1,6 @@
 import express from "express";
 import Products from "../models/products.mjs";
-import upload from "../middlewares/uploadimg.mjs";
+
 import verifyToken from "../middlewares/verifyToken.mjs";
 
 
@@ -24,38 +24,97 @@ res.send({message: "All products fetched successfully", Data: allProducts});
 // }
 // })
 
-router.post("/post",verifyToken, upload.single("image"), async (req, res) => {
-  try {
-    // log incoming data for debugging
-    console.log("Incoming body:", req.body);
-    console.log("Incoming file:", req.file);
+// router.post("/post",verifyToken, upload.single("image"), async (req, res) => {
+//   try {
+//     // log incoming data for debugging
+//     console.log("Incoming body:", req.body);
+//     console.log("Incoming file:", req.file);
 
-   const imageUrl = req.file?.path || "";
+//    const imageUrl = req.file?.path || "";
    
-  // message:"rigesster error",error:e.message
-// safe fallback if no file
+//   // message:"rigesster error",error:e.message
+// // safe fallback if no file
 
-    // Validate required fields
-    const { title, description, price, category } = req.body;
-    if (!title || !description || !price || !category) {
-      return res.status(400).send({ message: "All fields except image are required" });
-    }
+//     // Validate required fields
+//     const { title, description, price, category } = req.body;
+//     if (!title || !description || !price || !category) {
+//       return res.status(400).send({ message: "All fields except image are required" });
+//     }
 
-    const newProduct = new Products({
-      title,
-      description,
-      price,
-      category,
-      image: imageUrl,
+//     const newProduct = new Products({
+//       title,
+//       description,
+//       price,
+//       category,
+//       image: imageUrl,
+//     });
+
+//     await newProduct.save();
+//     res.status(201).send({ message: "Product posted successfully", Data: newProduct });
+//   } catch (e) {
+//     console.error("Error saving product:", e);
+//     res.status(500).send({ message: "Server error", error: e.message });
+//   }
+// });
+
+
+// router.post("/post", verifyToken, upload.single("image"), async (req, res) => {
+//   try {
+//     console.log("📩 Body:", req.body);
+//     console.log("📸 File:", req.file);
+
+//     if (!req.file) {
+//       return res.status(400).json({ error: "Image is required but not uploaded" });
+//     }
+
+//     const product = new Product({
+//       title: req.body.title,
+//       description: req.body.description,
+//       price: Number(req.body.price),
+//       image: req.file.path,   // ✅ use Cloudinary URL
+//       category: req.body.category,
+//     });
+
+//     await product.save();
+
+//     res.status(201).json({ message: "✅ Product added", product });
+//   } catch (err) {
+//     console.error("❌ Error in /product/post:", err.message);
+//     res.status(500).json({
+//       message: "Server error",
+//       error: err.message,
+//     });
+//   }
+// });
+
+
+
+router.post("/post", verifyToken, async (req, res) => {
+  try {
+    console.log("📩 Body:", req.body);
+    
+   
+
+    const product = new Products({
+      title: req.body.title,
+      description: req.body.description,
+      price: Number(req.body.price),
+      category: req.body.category,
     });
 
-    await newProduct.save();
-    res.status(201).send({ message: "Product posted successfully", Data: newProduct });
-  } catch (e) {
-    console.error("Error saving product:", e);
-    res.status(500).send({ message: "Server error", error: e.message });
+    await product.save();
+
+    res.status(201).json({ message: "✅ Product added", product });
+  } catch (err) {
+    console.error("❌ Error in /product/post:", err.message);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
   }
 });
+
+
 
 
 
