@@ -1,7 +1,7 @@
 import express from "express";
 import Products from "../models/products.mjs";
-
-import verifyToken from "../middlewares/verifyToken.mjs";
+import upload from "../middlewares/uploadimg.mjs"
+// import verifyToken from "../middlewares/verifyToken.mjs";
 
 
 const router = express.Router();
@@ -58,7 +58,7 @@ res.send({message: "All products fetched successfully", Data: allProducts});
 // });
 
 
-// router.post("/post", verifyToken, upload.single("image"), async (req, res) => {
+// router.post("/post", upload.single("image"), async (req, res) => {
 //   try {
 //     console.log("📩 Body:", req.body);
 //     console.log("📸 File:", req.file);
@@ -87,32 +87,66 @@ res.send({message: "All products fetched successfully", Data: allProducts});
 //   }
 // });
 
-
-
-router.post("/post", verifyToken, async (req, res) => {
+router.post("/post",upload.single("image"), async (req, res) => {
   try {
     console.log("📩 Body:", req.body);
+    console.log("📷 File:", req.file);
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image not uploaded" });
+    }
+
+    const { title, description, price, brand, availability, category } = req.body;
+
+    if (!title || !description || !price || !brand || !availability || !category) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const newProduct = new Products({
+      title,
+      description,
+      price: Number(price),
+      brand,
+      category,
+      availability,
+      image: req.file.path, // ✅ Cloudinary URL hota hai
+    });
+
+    await newProduct.save();
+
+    res.status(201).json({ message: "✅ Product added", newProduct });
+  } catch (e) {
+    console.error("🔥 Error in product post ", e);
+    res.status(500).json({ message: "Server error", error: e.message });
+  }
+});
+
+
+
+// router.post("/post", verifyToken, async (req, res) => {
+//   try {
+//     console.log("📩 Body:", req.body);
     
    
 
-    const product = new Products({
-      title: req.body.title,
-      description: req.body.description,
-      price: Number(req.body.price),
-      category: req.body.category,
-    });
+//     const product = new Products({
+//       title: req.body.title,
+//       description: req.body.description,
+//       price: Number(req.body.price),
+//       category: req.body.category,
+//     });
 
-    await product.save();
+//     await product.save();
 
-    res.status(201).json({ message: "✅ Product added", product });
-  } catch (err) {
-    console.error("❌ Error in /product/post:", err.message);
-    res.status(500).json({
-      message: "Server error",
-      error: err.message,
-    });
-  }
-});
+//     res.status(201).json({ message: "✅ Product added", product });
+//   } catch (err) {
+//     console.error("❌ Error in /product/post:", err.message);
+//     res.status(500).json({
+//       message: "Server error",
+//       error: err.message,
+//     });
+//   }
+// });
 
 
 
